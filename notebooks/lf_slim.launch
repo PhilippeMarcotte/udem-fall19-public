@@ -25,6 +25,7 @@
         <group if="$(arg /lane_following/line_detection)">
                 <remap from="line_detector_node/transform" to="anti_instagram_node/transform"/>
                 <remap from="line_detector_node/corrected_image/compressed" to="corrected_image/compressed"/>
+                <remap from="line_detector_node/segment_list" to="ground_projection/lineseglist_in"/>
                 <include file="$(find line_detector)/launch/line_detector_node.launch">
                     <arg name="veh" value="$(arg veh)"/>
                     <!-- NOTE: "line_detector_param_file_name" as special case -->
@@ -44,7 +45,7 @@
             <!-- Lane Filter -->
             <group if="$(arg /lane_following/lane_filter)">
                 <remap from="lane_filter_node/segment_list" to="ground_projection/lineseglist_out"/>
-                <remap from="lane_filter_node/car_cmd" to="/$(arg veh)/car_cmd"/>
+                <!-- <remap from="lane_filter_node/car_cmd" to="lane_controller_node/car_cmd"/> -->
                 <include file="$(find lane_filter)/launch/lane_filter_node.launch">
                     <arg name="veh" value="$(arg veh)"/>
                     <arg name="param_file_name" value="$(arg param_file_name)"/>
@@ -67,6 +68,7 @@
             <group if="$(arg inverse_kinematics)">
                 <remap from="inverse_kinematics_node/car_cmd" to="lane_controller_node/car_cmd"/>
                 <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+                <!-- <remap from="inverse_kinematics_node/actuator_limits_received" to="lane_controller_node/actuator_limits_received"/> -->
                 <include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
                     <arg name="veh" value="$(arg veh)"/>
                 </include>
