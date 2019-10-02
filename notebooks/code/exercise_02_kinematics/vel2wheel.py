@@ -1,3 +1,4 @@
+import numpy as np
 def vel2wheel(v, omega, wheel_dist, wheel_rad):
     
     gain = 1
@@ -11,9 +12,10 @@ def vel2wheel(v, omega, wheel_dist, wheel_rad):
     
     
 ##### Fill the code here:
-
-    left_rate = 0
-    right_rate = 0
+    v = v / (wheel_rad * np.pi * 2)
+    omega = omega / (wheel_rad * np.pi * 2)
+    left_rate = (v - (wheel_dist / 2) * omega) 
+    right_rate = (v + (wheel_dist / 2) * omega)
     
 ####
 
