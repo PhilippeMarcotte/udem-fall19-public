@@ -1,7 +1,7 @@
 import random
 import math
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 class RRT_planner:
     """
@@ -51,7 +51,6 @@ class RRT_planner:
 
         self.list_nodes = [self.start_node]
         for it in range(self.max_iter):
-            new_node = self.Node(0, 0)
             ####### 
             # Objective: create a valid new_node according to the RRT algorithm and append it to "self.list_nodes"
             # You can call any of the functions defined lower, or add your own.
@@ -59,6 +58,11 @@ class RRT_planner:
             # YOUR CODE HERE
 
             #######
+            random_node = self.get_random_node()
+            nearest_node = self.list_nodes[self.get_closest_node_id(self.list_nodes, random_node)]
+            new_node = self.extend(nearest_node, random_node)
+            if not self.collision(new_node, self.list_obstacles):
+                self.list_nodes.append(new_node)
 
             if show_anim and it % 5 == 0:
                 self.draw_graph(random_node)
@@ -189,18 +193,38 @@ class RTT_Path_Follower:
     Follows a path given by RRT_Planner
     """
     def __init__(self, path, local_env):
-        self.path = path
+        self.path = path[:-1]
         self.env = local_env
+        self.k_p_theta = 10.0
+        self.theta_threshold = np.pi / 6
     
     def next_action(self):
+        next_pos = self.path[-1]
         # Current position and angle
         cur_pos_x = self.env.cur_pos[0]
         cur_pos_y = self.env.cur_pos[2]
         cur_angle = self.env.cur_angle
-        
-        v = 0.
-        omega = 0.
-        
+
+        x_diff = next_pos[0] - cur_pos_x
+        y_diff = next_pos[1] - cur_pos_y
+        angle_to_be = -1 * np.angle(x_diff + y_diff * 1j)
+
+        dist = math.sqrt((cur_pos_x - next_pos[0])**2 + (cur_pos_y - next_pos[1])**2)
+
+        if math.fabs(cur_angle%(2*np.pi) - angle_to_be%(2*np.pi)) > 0.05:
+            print("turning")
+            v = 0.
+            omega = (angle_to_be%(2*np.pi) - cur_angle%(2*np.pi) )
+        elif dist > 0.02:
+            print("advancing")
+            omega = 0
+            v = dist
+        else:
+            print("stopping")
+            v = 0
+            omega = 0
+            self.path = self.path[:-1]
+
         #######
         #
         # YOUR CODE HERE: change v and omega so that the Duckiebot keeps on following the path
