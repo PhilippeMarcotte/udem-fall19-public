@@ -186,8 +186,8 @@ class RRT_planner:
 
         return min_id
     
-    
-    
+
+
 class RTT_Path_Follower:
     """
     Follows a path given by RRT_Planner
@@ -212,24 +212,14 @@ class RTT_Path_Follower:
         dist = math.sqrt((cur_pos_x - next_pos[0])**2 + (cur_pos_y - next_pos[1])**2)
 
         if math.fabs(cur_angle%(2*np.pi) - angle_to_be%(2*np.pi)) > 0.05:
-            print("turning")
             v = 0.
             omega = (angle_to_be%(2*np.pi) - cur_angle%(2*np.pi) )
         elif dist > 0.02:
-            print("advancing")
             omega = 0
             v = dist
         else:
-            print("stopping")
             v = 0
             omega = 0
             self.path = self.path[:-1]
 
-        #######
-        #
-        # YOUR CODE HERE: change v and omega so that the Duckiebot keeps on following the path
-        #
-        #######
-        
         return v, omega
-    
